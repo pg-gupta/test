@@ -11,7 +11,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -23,7 +22,7 @@ import static molocotest.MolocoQues2.readFileGson;
 
 /**
  *
- * @author miteshpatekar
+ * @author pooja gupta
  */
 public class MolocoMain {
 

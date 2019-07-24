@@ -1,8 +1,6 @@
 package molocotest;
 
-import com.google.gson.Gson;
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +35,7 @@ import static java.util.stream.Collectors.toSet;
  */
 /**
  *
- * @author miteshpatekar
+ * @author pooja gupta
  */
 class Site {
 
@@ -176,7 +173,7 @@ public class MolocoQues3 {
     //Consider only the rows with country_id = "BDV" (there are 844 such rows). 
     //For each site_id, we can compute the number of unique user_id's found in these 844 rows. 
     //Which site_id has the largest number of unique users? And what's the number?
-    public static String query1(List<Site> sites, String country_id) {
+    public static List<String> query1(List<Site> sites, String country_id) {
         List<Site> filteredByCountry = sites.stream().filter(s -> s.getCountry_id().equals(country_id)).collect(Collectors.toList());
 
         Map<String, Integer> siteUniqueUser = filteredByCountry.stream().collect(
@@ -196,7 +193,7 @@ public class MolocoQues3 {
             String key = entry.getKey();
             long value = entry.getValue();
 
-            return key;
+            return Arrays.asList(key,String.valueOf(value));
         } else {
             return null;
         }
