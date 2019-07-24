@@ -18,6 +18,11 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -102,23 +107,6 @@ class Product {
 
 public class MolocoQues2 {
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        try {
-            List<Product> products=readFileGson();
-            List<String> topByUsers=productsRankedByUniqueUser(products);
-            List<String> topByQuantity=productsRankedByQuantity(products);
-            
-            System.out.println("Most popular product(s) based on the number of purchasers: "+topByUsers);
-            System.out.println("Most popular product(s) based on the  quantity of goods sold: "+topByQuantity);
-
-        } catch (IOException ex) {
-            Logger.getLogger(MolocoQues2.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
     public static List<Product> readFileGson() throws IOException {
         try (InputStream resource = MolocoQues2.class.getResourceAsStream("sample2.tsv")) {
             List<String> productsJson
@@ -136,79 +124,76 @@ public class MolocoQues2 {
             return products;
         }
     }
-    
+
     /**
      *
      * @param products
      * @return list of products which are ranked based on total unique users
      */
-    public static List<String> productsRankedByUniqueUser(List<Product> products){
-            List<String> topProducts=new ArrayList();
-            // Product mapping with unique user counts
-            Map<String, Integer> productToUniqueUser = products.stream().collect(
-                    groupingBy(
-                            Product::getProduct_id,
-                            collectingAndThen(
-                                    mapping(Product::getUser_id, toSet()),
-                                    Set::size)));
+    public static List<String> productsRankedByUniqueUser(List<Product> products) {
+        List<String> topProducts = new ArrayList();
+        // Product mapping with unique user counts
+        Map<String, Integer> productToUniqueUser = products.stream().collect(
+                groupingBy(
+                        Product::getProduct_id,
+                        collectingAndThen(
+                                mapping(Product::getUser_id, toSet()),
+                                Set::size)));
 
-            Map<String, Integer> productToUniqueUserSorted = new LinkedHashMap<>();
-            productToUniqueUser.entrySet().stream()
-                    .sorted(Map.Entry.<String, Integer>comparingByValue()
-                            .reversed()).forEachOrdered(e -> productToUniqueUserSorted.put(e.getKey(), e.getValue()));
-            
-            Map.Entry<String,Integer> entry = productToUniqueUserSorted.entrySet().iterator().next();
-            String key= entry.getKey();
-            int value=entry.getValue();
-            
-            for(String s:productToUniqueUserSorted.keySet()){
-                if(productToUniqueUserSorted.get(s)==value){
-                    topProducts.add(s);
-                }
-                else
-                    break;
+        Map<String, Integer> productToUniqueUserSorted = new LinkedHashMap<>();
+        productToUniqueUser.entrySet().stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue()
+                        .reversed()).forEachOrdered(e -> productToUniqueUserSorted.put(e.getKey(), e.getValue()));
+
+        Map.Entry<String, Integer> entry = productToUniqueUserSorted.entrySet().iterator().next();
+        String key = entry.getKey();
+        int value = entry.getValue();
+
+        for (String s : productToUniqueUserSorted.keySet()) {
+            if (productToUniqueUserSorted.get(s) == value) {
+                topProducts.add(s);
+            } else {
+                break;
             }
-  
+        }
 
         return topProducts;
 
     }
+
     /**
      *
      * @param products
      * @return list of products which are ranked based on total quantity sold
      */
-    public static List<String> productsRankedByQuantity(List<Product> products){
-            
-            
-            List<String> topProducts=new ArrayList();
-            // Product mapping with unique user counts
-             // product mapping with quantity counts
-            Map<String, Long> productToQuantity
-                    = products.stream().collect(
-                            Collectors.groupingBy(
-                                    Product::getProduct_id, Collectors.summingLong(Product::getQuantity)
-                            )
-                    );
-            
-            Map<String, Long> productToQuantitySorted = new LinkedHashMap<>();
-            productToQuantity.entrySet().stream()
-                    .sorted(Map.Entry.<String, Long>comparingByValue()
-                            .reversed()).forEachOrdered(e -> productToQuantitySorted.put(e.getKey(), e.getValue()));
-            
-            
-            Map.Entry<String,Long> entry = productToQuantitySorted.entrySet().iterator().next();
-            String key= entry.getKey();
-            long value=entry.getValue();
-            
-            for(String s:productToQuantitySorted.keySet()){
-                if(productToQuantitySorted.get(s)==value){
-                    topProducts.add(s);
-                }
-                else
-                    break;
+    public static List<String> productsRankedByQuantity(List<Product> products) {
+
+        List<String> topProducts = new ArrayList();
+        // Product mapping with unique user counts
+        // product mapping with quantity counts
+        Map<String, Long> productToQuantity
+                = products.stream().collect(
+                        Collectors.groupingBy(
+                                Product::getProduct_id, Collectors.summingLong(Product::getQuantity)
+                        )
+                );
+
+        Map<String, Long> productToQuantitySorted = new LinkedHashMap<>();
+        productToQuantity.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue()
+                        .reversed()).forEachOrdered(e -> productToQuantitySorted.put(e.getKey(), e.getValue()));
+
+        Map.Entry<String, Long> entry = productToQuantitySorted.entrySet().iterator().next();
+        String key = entry.getKey();
+        long value = entry.getValue();
+
+        for (String s : productToQuantitySorted.keySet()) {
+            if (productToQuantitySorted.get(s) == value) {
+                topProducts.add(s);
+            } else {
+                break;
             }
-  
+        }
 
         return topProducts;
 
